@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manu Store - Téléphones</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    #map {
+      height: 300px;
+      width: 100%;
+    }
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: #f8f9fa;
+      padding: 10px;
+      text-align: center;
+      border-top: 1px solid #dee2e6;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid"><a class="navbar-brand" href="#">📱 Manu Store 📱</a>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <h1 class="text-center">Bienvenue chez Manu Store</h1>
+    <p class="text-center">Vente de téléphones neufs et d’occasion à de très bons prix 📦</p>
+    <div class="row">
+      <!-- Exemple de téléphone -->
+      <div class="col-md-4 mb-4">
+        <div class="card">
+<img src="Affiche.jpg" alt="Affiche" width="350">
+          <div class="card-body">
+            <h5 class="card-title">La qualité au bon prix. Nous sommes situés au grand marché de Pointe-Noire dans la grande galerie.</h5>
+          </div>
+        </div>
+    <h3 class="mt-5">Localisation</h3>
+    <div id="map"></div>
+
+    <h3 class="mt-5">Passer une commande</h3>
+    <form id="orderForm">
+      <div class="mb-3">
+        <label class="form-label">Nom complet</label>
+        <input type="text" class="form-control" id="name" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Téléphone / WhatsApp</label>
+        <input type="tel" class="form-control" id="phone" required />
+      </div>
+      <div class="mb-3"><label class="form-label">Modèle souhaité</label>
+        <input type="text" class="form-control" id="model" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Message / Détails</label>
+        <textarea class="form-control" id="message" rows="3"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Envoyer via WhatsApp</button>
+      <button type="button" class="btn btn-success" id="export_button">Exporter vers Excel</button>
+    </form>
+  </div>
+
+  <footer class="bg-dark text-white text-center py-2 mt-5">
+    ©️ 2025 Manu Store - Tous droits réservés
+  </footer>
+
+  <div class="cookie-banner" id="cookieBanner">
+    Ce site utilise des cookies pour améliorer votre expérience.
+    <button class="btn btn-sm btn-primary ms-2" onclick="acceptCookies()">Accepter</button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script>
+    // Initialisation de la carte Google Maps
+    function initMap() {
+      const location = { lat: -4.2699, lng: 15.2719 }; // Coordonnées de Pointe-Noireconst map = new google.maps.Map(document.getElementById("map"), {
+        center: location,
+        zoom: 12,
+      });
+      new google.maps.Marker({ position: location, map: map });
+    }
+
+    // Chargement de la carte après le chargement de la page
+    window.initMap = initMap;
+
+    // Gestion du formulaire
+    document.getElementById("orderForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const model = document.getElementById("model").value;
+      const message = document.getElementById("message").value;
+
+      const whatsappMessage = `Bonjour, je suis name. Je souhaite commander le modèle{model}. message`;
+      const whatsappURL = `https://wa.me/242XXXXXXXXX?text={encodeURIComponent(whatsappMessage)}`;
+      window.open(whatsappURL, "_blank");
+    });
+
+    // Exportation vers Excel
+    document.getElementById("export_button").addEventListener("click", function () {
+      const data = [
+        ["Nom", "Téléphone", "Modèle", "Message"],
+        [
+          document.getElementById("name").value,
+          document.getElementById("phone").value,
+          document.getElementById("model").value,document.getElementById("message").value,
+        ],
+      ];
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Commande");
+      XLSX.writeFile(workbook, "commande.xlsx");
+    });
+
+    // Gestion des cookies
+    function acceptCookies() {
+      document.getElementById("cookieBanner").style.display = "none";
+      localStorage.setItem("cookiesAccepted", "true");
+    }
+
+    window.addEventListener("load", function () {
+      if (localStorage.getItem("cookiesAccepted") === "true") {
+        document.getElementById("cookieBanner").style.display = "none";
+      }
+    });
+  </script>
+  <!-- API Google Maps -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY
